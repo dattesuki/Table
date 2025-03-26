@@ -3,6 +3,6 @@
 //
 
 
-#include "template.h"
+#include "table.h"
 
 int check() { return 1; }

@@ -2,7 +2,7 @@
 //Litvyakov D. D.
 //
 
-#include "template.h"
+#include "table.h"
 #include <iostream>
 
 int main()

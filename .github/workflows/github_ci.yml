@@ -11,7 +11,7 @@ jobs:
             mkdir build
             cmake -Bbuild -G "Visual Studio 17 2022"       
             cmake --build build
-            .\build\bin\test_project.exe
+            .\build\bin\test_table.exe
     
   linux-build:
     runs-on: ubuntu-20.04
@@ -21,7 +21,7 @@ jobs:
             mkdir build
             cmake -Bbuild -G "Unix Makefiles"       
             cmake --build build
-            ./build/bin/test_project
+            ./build/bin/test_table
 
 
 
