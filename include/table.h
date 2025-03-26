@@ -28,9 +28,9 @@ protected:
 template<typename type>
 class TableByArray: public TableInterface<type>{
 protected:
-	TableByArray() {};
 	using pair = std::pair < size_t, type>;
 	using vector = std::vector<std::pair<size_t, type>>;
+	TableByArray() {};
 	vector mem;
 public:
 	bool empty() override {return mem.empty();}
@@ -43,29 +43,29 @@ public:
 template<typename type>
 class UnsortedTable : public TableByArray<type> {
 protected:
+	using pair = std::pair < size_t, type>;
+	using vector = std::vector<std::pair<size_t, type>>;
 public:
 	UnsortedTable() {}
 
 	bool insert(size_t key, type val) override {
-		for (size_t i = 0; i < mem.size(); ++i) {
-			if (mem[i].first == key) return false;
+		for (size_t i = 0; i < TableByArray<type>::mem.size(); ++i) {
+			if (TableByArray<type>::mem[i].first == key) return false;
 		}
-		mem.push_back(pair(key,val));
+		TableByArray<type>::mem.push_back(pair(key,val));
 		return true;
 	}
 
 	bool erase(size_t key) override {
 		long num = -1;
-		for (size_t i = 0; i < mem.size(); ++i) {
-			if (mem[i].first == key) num = i;
+		for (size_t i = 0; i < TableByArray<type>::mem.size(); ++i) {
+			if (TableByArray<type>::mem[i].first == key) num = i;
 		}
 		if (num == -1) return false;
-		swap(mem[num], mem[mem.size() - 1]);
-		mem.pop_back();
+		swap(TableByArray<type>::mem[num], TableByArray<type>::mem[TableByArray<type>::mem.size() - 1]);
+		TableByArray<type>::mem.pop_back();
 		return true;
 	}
-
-
 
 	class iterator {
 	protected:
@@ -79,8 +79,8 @@ public:
 			++it;
 			return temp;
 		}
-		typename pair operator*() {	return *it;}
-		typename type value() { return (*it).second; }
+		pair operator*() {	return *it;}
+		type value() { return (*it).second; }
 		size_t key() {return (*it).first;}
 
 		iterator& operator=(const iterator& right) {
@@ -92,17 +92,17 @@ public:
 	};
 
 	iterator begin(){
-		iterator it = mem.begin();
+		iterator it = TableByArray<type>::mem.begin();
 		return it;
 	}
 
 	iterator end() {
-		iterator it = mem.end();
+		iterator it = TableByArray<type>::mem.end();
 		return it;
 	}
 
 	iterator find(size_t key) { 
-		iterator it = mem.begin();
+		iterator it = TableByArray<type>::mem.begin();
 		while (it.key() != key) ++it;
 		if (it.key() != key) it = end();
 		return it; 
