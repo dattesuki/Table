@@ -79,9 +79,14 @@ public:
 			++it;
 			return temp;
 		}
-		pair operator*() {	return *it;}
-		type value() { return (*it).second; }
-		size_t key() {return (*it).first;}
+		iterator operator--() {
+			typename vector::iterator temp = it;
+			--it;
+			return temp;
+		}
+		pair& operator*() {	return *it;}
+		type& value() { return (*it).second; }
+		size_t& key() {return (*it).first;}
 
 		iterator& operator=(const iterator& right) {
 			if (this != &right) {
@@ -108,3 +113,6 @@ public:
 		return it; 
 	}
 };
+
+
+
