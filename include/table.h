@@ -5,7 +5,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
-
+#include <forward_list>
 
 //interface for table classes
 template<typename type>
@@ -41,6 +41,7 @@ public:
 		for (size_t i = 0; i < table.mem.size(); ++i) {
 			os << table.mem[i].first << ":" << table.mem[i].second << std::endl;
 		}
+		if (table.mem.empty()) os << "empty";
 		return os;
 	}
 };
@@ -82,13 +83,20 @@ public:
 			it = ptr;
 		}
 		iterator operator++(){
-			typename vector::iterator temp = it;
 			return 	++it;;
 		}
 		iterator operator--() {
+			return --it;
+		}
+		iterator operator++(int) {
 			typename vector::iterator temp = it;
-			--it;
-			return temp;
+			it++;
+			return 	temp;
+		}
+		iterator operator--(int) {
+			typename vector::iterator temp = it;
+			it--;
+			return 	temp;
 		}
 		pair& operator*() {	return *it;}
 		type& value() { return (*it).second; }
@@ -122,14 +130,14 @@ public:
 
 
 template<typename type>
-bool le_operator(type a, type b) {
+bool le_operator(size_t a, type b) {
 	if (a <= b) return true;
 	else return false;
 }
 
 
 template<typename type>
-bool ge_operator(type a, type b) {
+bool ge_operator(size_t a, type b) {
 	if (a >= b) return true;
 	else return false;
 }
@@ -140,9 +148,9 @@ class SortedTable : public TableByArray<type> {
 protected:
 	using pair = std::pair < size_t, type>;
 	using vector = std::vector<std::pair<size_t, type>>;
-	bool (*my_operator)(type, type) ;
+	bool (*my_operator)(size_t, type) ;
 public:
-	typedef bool (*func)(type, type);
+	typedef bool (*func)(size_t, type);
 	SortedTable() : my_operator(&le_operator<type>) {}
 
 	bool check_op(type a, type b) {
@@ -278,18 +286,35 @@ public:
 	}
 };
 
-
+template<typename type>
+size_t hash_func(size_t key, type val) {
+	size_t hash = 14695981039346656037ULL;
+	hash = (hash ^ key) * 1099511628211ULL;
+	return hash;
+}
 //hash tables class
 template<typename type>
-class HashTable : public TableByArray<type> {
+class HashTable : public TableByArray<std::forward_list<type>> {
 protected:
-	using pair = std::pair < size_t, type>;
-	using vector = std::vector<std::pair<size_t, type>>;
+	using pair = std::pair < size_t, std::forward_list<type>>;
+	using vector = std::vector<std::pair<size_t, std::forward_list<type>>>;
+	size_t (*my_hash)(size_t, type);
+	size_t sz;
+
+	bool insert(size_t key, std::forward_list<type> val) override {		return true;	}
+
+	size_t get_hash(size_t key, type val) {
+		return (((*my_hash)(key, val)) % (sz));
+	}
 public:
-	HashTable() {}
+	typedef size_t (*func)(size_t, type);
+	HashTable(size_t _sz, func f = &hash_func<type>) : sz(_sz), my_hash(f) {
+		TableByArray<std::forward_list<type>>::mem.resize(sz);
+	}
 
-	bool insert(size_t key, type val) override {
-
+	bool insert(size_t key, type val) {
+		size_t num = get_hash(key,val);
+		
 		return true;
 	}
 
