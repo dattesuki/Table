@@ -4,6 +4,7 @@
 
 #pragma once
 #include <vector>
+#include <iostream>
 
 
 //interface for table classes
@@ -36,6 +37,12 @@ public:
 	bool empty() override {return mem.empty();}
 	size_t size() override { return mem.size(); }
 	void clear() override { mem.clear(); }
+	friend std::ostream& operator<<(std::ostream& os, TableByArray<type>& table){
+		for (size_t i = 0; i < table.mem.size(); ++i) {
+			os << table.mem[i].first << ":" << table.mem[i].second << std::endl;
+		}
+		return os;
+	}
 };
 
 
@@ -76,8 +83,7 @@ public:
 		}
 		iterator operator++(){
 			typename vector::iterator temp = it;
-			++it;
-			return temp;
+			return 	++it;;
 		}
 		iterator operator--() {
 			typename vector::iterator temp = it;
@@ -115,8 +121,6 @@ public:
 };
 
 
-
-
 template<typename type>
 bool le_operator(type a, type b) {
 	if (a <= b) return true;
@@ -139,7 +143,7 @@ protected:
 	bool (*my_operator)(type, type) ;
 public:
 	typedef bool (*func)(type, type);
-	SortedTable(func f = &le_operator<type>) : my_operator(f) {}
+	SortedTable() : my_operator(&le_operator<type>) {}
 
 	bool check_op(type a, type b) {
 		return (*my_operator)(a, b);
@@ -204,29 +208,98 @@ protected:
 		if (flag == true) {
 			it = (TableByArray<type>::mem.begin() + middle);
 		}
+		if (flag == false && middle != 0) it = (TableByArray<type>::mem.begin() + (middle - 1));
 		return it;
 	}
 
 public:
 	iterator find(size_t key) {
-		return binary_search(key);
+		if (binary_search(key).key == key) return binary_search(key).key;
+		else return end();
 	}
 
+	//for le operator
 	bool insert(size_t key, type val) override {
-		//rewrite this
-		for (size_t i = 0; i < TableByArray<type>::mem.size(); ++i) {
-			if (TableByArray<type>::mem[i].first == key) return false;
+		if (TableByArray<type>::mem.empty()) {
+			TableByArray<type>::mem.push_back(pair(key, val));
+			return true;
 		}
-		TableByArray<type>::mem.push_back(pair(key, val));
+		size_t middle = 0;
+		size_t left = 0;
+		size_t right = TableByArray<type>::mem.size() - 1;
+		size_t insert_pos = 0;
+
+		while (left <= right) {
+			middle = left + (right - left) / 2;
+
+			if (TableByArray<type>::mem[middle].first == key) {
+				return false; // ключ уже существует
+			}
+
+			if ((*my_operator)(TableByArray<type>::mem[middle].first, key)) {
+				left = middle + 1;
+				insert_pos = left;
+			}
+			else {
+				right = middle - 1;
+				insert_pos = middle;
+			}
+		}
+
+		TableByArray<type>::mem.insert(TableByArray<type>::mem.begin() + insert_pos, pair(key, val));
 		return true;
 	}
 
 	bool erase(size_t key) override {
-		iterator iter = binary_search(key);
-		if (iter == end()) return false;
-		else TableByArray<type>::mem.erase(iter.it);
-		return true;
+		if (TableByArray<type>::mem.empty()) {
+			return false;
+		}
+		size_t middle = 0;
+		size_t left = 0;
+		size_t right = TableByArray<type>::mem.size() - 1;
+		bool flag = false;
+		while (left <= right) {
+			middle = left + (right - left) / 2;
+			if (TableByArray<type>::mem[middle].first == key) {
+				flag = true;
+				break;
+			}
+			if ((*my_operator)(TableByArray<type>::mem[middle].first, key)) {
+				left = middle + 1;
+			}
+			else {
+				right = middle - 1;
+			}
+		}
+		if (flag == true) {
+			TableByArray<type>::mem.erase(TableByArray<type>::mem.begin() + middle);
+		}
+		return flag;
 	}
 };
 
 
+//hash tables class
+template<typename type>
+class HashTable : public TableByArray<type> {
+protected:
+	using pair = std::pair < size_t, type>;
+	using vector = std::vector<std::pair<size_t, type>>;
+public:
+	HashTable() {}
+
+	bool insert(size_t key, type val) override {
+
+		return true;
+	}
+
+	bool erase(size_t key) override {
+
+		return true;
+	}
+
+	size_t find(size_t key) {
+
+		return key;
+	}
+};
