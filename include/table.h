@@ -241,7 +241,7 @@ public:
 
 	
 	bool insert(size_t key, type val) override {
-		if (empty()) TableByArray<type>::mem.push_back(pair(key, val));
+		if (this->empty()) TableByArray<type>::mem.push_back(pair(key, val));
 		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
 		if ((*it).first == key) return false;
 		else TableByArray<type>::mem.insert(it, pair(key, val));
