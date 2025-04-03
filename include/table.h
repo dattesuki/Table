@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <list>
+#include <algorithm>
 
 //interface for table classes
 template<typename type>
@@ -226,12 +227,6 @@ protected:
 	struct Compare {
 		bool operator()(const pair& a, const pair& b) const {
 			return a.first < b.first;
-		}
-		bool operator()(const pair& a, size_t b) const {
-			return a.first < b;
-		}
-		bool operator()(size_t a, const pair& b) const {
-			return a < b.first;
 		}
 	};
 
