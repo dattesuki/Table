@@ -200,7 +200,7 @@ public:
 		iterator it = TableByArray<type>::mem.end();
 		return it;
 	}
-	typename vector::iterator get_it() { return it; }
+	
 
 protected:
 	//for le operator
