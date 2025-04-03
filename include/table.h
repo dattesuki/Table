@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <list>
+#include <algorithm>
 
 //interface for table classes
 template<typename type>
@@ -148,7 +149,7 @@ class SortedTable : public TableByArray<type> {
 protected:
 	using pair = std::pair < size_t, type>;
 	using vector = std::vector<std::pair<size_t, type> >;
-	bool (*my_operator)(size_t, type) ;
+	bool (*my_operator)(size_t, type);
 public:
 	typedef bool (*func)(size_t, type);
 	SortedTable() : my_operator(&le_operator<type>) {}
@@ -201,8 +202,9 @@ public:
 		return it;
 	}
 	
+
 protected:
-    //for le operator
+	//for le operator
 	/*
 	iterator binary_search(size_t key) {
 		size_t left, right, middle;
@@ -223,37 +225,31 @@ protected:
 	}
 	*/
 	struct Compare {
-		bool operator()(const std::pair<int, int>& pair, int key) const {
-			return pair.first < key;
-		}
-
-		bool operator()(int key, const std::pair<int, int>& pair) const {
-			return key < pair.first;
+		bool operator()(const pair& a, const pair& b) const {
+			return a.first < b.first;
 		}
 	};
 
 public:
 	iterator find(size_t key) {
-		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
-		if ((*it).first != key) return end();
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), std::make_pair(key, type()), Compare());
+		if (it == TableByArray<type>::mem.end() || (*it).first != key)
+			return end();
 		return iterator(it);
 	}
 
-	
 	bool insert(size_t key, type val) override {
-		if (empty()) TableByArray<type>::mem.push_back(pair(key, val));
-		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
-		if ((*it).first == key) return false;
-		else TableByArray<type>::mem.insert(it, pair(key, val));
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), std::make_pair(key, type()), Compare());
+		if (it != TableByArray<type>::mem.end() && (*it).first == key)
+			return false;
+		TableByArray<type>::mem.insert(it, pair(key, val));
 		return true;
 	}
-    //for le operator
+
 	bool erase(size_t key) override {
-		if (TableByArray<type>::mem.empty()) {
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), std::make_pair(key, type()), Compare());
+		if (it == TableByArray<type>::mem.end() || (*it).first != key)
 			return false;
-		}
-		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
-		if ((*it).first != key) return false;
 		TableByArray<type>::mem.erase(it);
 		return true;
 	}
