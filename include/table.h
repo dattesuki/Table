@@ -200,6 +200,7 @@ public:
 		iterator it = TableByArray<type>::mem.end();
 		return it;
 	}
+	typename vector::iterator get_it() { return it; }
 
 protected:
 	//for le operator
@@ -236,14 +237,14 @@ protected:
 
 public:
 	iterator find(size_t key) {
-		typename std::vector<std::pair<size_t,type> >::iterator it = std::lower_bound(typename TableByArray<type>::mem.begin(), typename TableByArray<type>::mem.end(), key, Compare());
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
 		if (it == TableByArray<type>::mem.end() || (*it).first != key)
 			return end();
 		return iterator(it);
 	}
 
 	bool insert(size_t key, type val) override {
-		typename std::vector<std::pair<size_t, type> >::iterator it = std::lower_bound(typename TableByArray<type>::mem.begin(), typename TableByArray<type>::mem.end(), key, Compare());
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
 		if (it != TableByArray<type>::mem.end() && (*it).first == key)
 			return false;
 		TableByArray<type>::mem.insert(it, pair(key, val));
@@ -251,7 +252,7 @@ public:
 	}
 
 	bool erase(size_t key) override {
-		typename std::vector<std::pair<size_t, type> >::iterator it = std::lower_bound(typename TableByArray<type>::mem.begin(), typename TableByArray<type>::mem.end(), key, Compare());
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
 		if (it == TableByArray<type>::mem.end() || (*it).first != key)
 			return false;
 		TableByArray<type>::mem.erase(it);
