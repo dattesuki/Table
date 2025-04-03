@@ -203,6 +203,7 @@ public:
 	
 protected:
     //for le operator
+	/*
 	iterator binary_search(size_t key) {
 		size_t left, right, middle;
 		bool flag = false;
@@ -220,42 +221,30 @@ protected:
 		if (flag == false && middle != 0) it = (TableByArray<type>::mem.begin() + (middle - 1));
 		return it;
 	}
+	*/
+	struct Compare {
+		bool operator()(const std::pair<int, int>& pair, int key) const {
+			return pair.first < key;
+		}
+
+		bool operator()(int key, const std::pair<int, int>& pair) const {
+			return key < pair.first;
+		}
+	};
 
 public:
 	iterator find(size_t key) {
-		if (binary_search(key).key == key) return binary_search(key).key;
-		else return end();
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
+		if ((*it).first != key) return end();
+		return iterator(it);
 	}
 
-	//for le operator
+	
 	bool insert(size_t key, type val) override {
-		if (TableByArray<type>::mem.empty()) {
-			TableByArray<type>::mem.push_back(pair(key, val));
-			return true;
-		}
-		size_t middle = 0;
-		size_t left = 0;
-		size_t right = TableByArray<type>::mem.size() - 1;
-		size_t insert_pos = 0;
-
-		while (left <= right) {
-			middle = left + (right - left) / 2;
-
-			if (TableByArray<type>::mem[middle].first == key) {
-				return false; // ключ уже существует
-			}
-
-			if ((*my_operator)(TableByArray<type>::mem[middle].first, key)) {
-				left = middle + 1;
-				insert_pos = left;
-			}
-			else {
-				right = middle - 1;
-				insert_pos = middle;
-			}
-		}
-
-		TableByArray<type>::mem.insert(TableByArray<type>::mem.begin() + insert_pos, pair(key, val));
+		if (empty()) TableByArray<type>::mem.push_back(pair(key, val));
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
+		if ((*it).first == key) return false;
+		else TableByArray<type>::mem.insert(it, pair(key, val));
 		return true;
 	}
     //for le operator
@@ -263,27 +252,10 @@ public:
 		if (TableByArray<type>::mem.empty()) {
 			return false;
 		}
-		size_t middle = 0;
-		size_t left = 0;
-		size_t right = TableByArray<type>::mem.size() - 1;
-		bool flag = false;
-		while (left <= right) {
-			middle = left + (right - left) / 2;
-			if (TableByArray<type>::mem[middle].first == key) {
-				flag = true;
-				break;
-			}
-			if ((*my_operator)(TableByArray<type>::mem[middle].first, key)) {
-				left = middle + 1;
-			}
-			else {
-				right = middle - 1;
-			}
-		}
-		if (flag == true) {
-			TableByArray<type>::mem.erase(TableByArray<type>::mem.begin() + middle);
-		}
-		return flag;
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), key, Compare());
+		if ((*it).first != key) return false;
+		TableByArray<type>::mem.erase(it);
+		return true;
 	}
 };
 
@@ -328,7 +300,6 @@ public:
 	void clear() override { 
 		for (size_t i = 0; i < sz; ++i) {
 			vec[i].clear();
-			vec[i].resize(sz);
 		}
 	}
 
