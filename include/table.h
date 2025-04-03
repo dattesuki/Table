@@ -237,28 +237,30 @@ protected:
 
 public:
 	iterator find(size_t key) {
-		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), std::make_pair(key, type()), Compare());
-		if (it == TableByArray<type>::mem.end() || (*it).first != key)
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(),
+			std::make_pair(key, type()), Compare());
+		if (it == TableByArray<type>::mem.end() || it->first != key)
 			return end();
 		return iterator(it);
 	}
 
 	bool insert(size_t key, type val) override {
-		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), std::make_pair(key, type()), Compare());
-		if (it != TableByArray<type>::mem.end() && (*it).first == key)
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(),
+			std::make_pair(key, type()), Compare());
+		if (it != TableByArray<type>::mem.end() && it->first == key)
 			return false;
 		TableByArray<type>::mem.insert(it, pair(key, val));
 		return true;
 	}
 
 	bool erase(size_t key) override {
-		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(), std::make_pair(key, type()), Compare());
-		if (it == TableByArray<type>::mem.end() || (*it).first != key)
+		auto it = std::lower_bound(TableByArray<type>::mem.begin(), TableByArray<type>::mem.end(),
+			std::make_pair(key, type()), Compare());
+		if (it == TableByArray<type>::mem.end() || it->first != key)
 			return false;
 		TableByArray<type>::mem.erase(it);
 		return true;
 	}
-};
 
 template<typename type>
 size_t hash_func(size_t key, type val) {
