@@ -5,7 +5,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
-#include <forward_list>
+#include <list>
 
 //interface for table classes
 template<typename type>
@@ -30,7 +30,7 @@ template<typename type>
 class TableByArray: public TableInterface<type>{
 protected:
 	using pair = std::pair < size_t, type>;
-	using vector = std::vector<std::pair<size_t, type>>;
+	using vector = std::vector<std::pair<size_t, type> >;
 	TableByArray() {};
 	vector mem;
 public:
@@ -52,7 +52,7 @@ template<typename type>
 class UnsortedTable : public TableByArray<type> {
 protected:
 	using pair = std::pair < size_t, type>;
-	using vector = std::vector<std::pair<size_t, type>>;
+	using vector = std::vector<std::pair<size_t, type> >;
 public:
 	UnsortedTable() {}
 
@@ -147,7 +147,7 @@ template<typename type>
 class SortedTable : public TableByArray<type> {
 protected:
 	using pair = std::pair < size_t, type>;
-	using vector = std::vector<std::pair<size_t, type>>;
+	using vector = std::vector<std::pair<size_t, type> >;
 	bool (*my_operator)(size_t, type) ;
 public:
 	typedef bool (*func)(size_t, type);
@@ -202,6 +202,7 @@ public:
 	}
 	
 protected:
+    //for le operator
 	iterator binary_search(size_t key) {
 		size_t left, right, middle;
 		bool flag = false;
@@ -257,7 +258,7 @@ public:
 		TableByArray<type>::mem.insert(TableByArray<type>::mem.begin() + insert_pos, pair(key, val));
 		return true;
 	}
-
+    //for le operator
 	bool erase(size_t key) override {
 		if (TableByArray<type>::mem.empty()) {
 			return false;
@@ -294,27 +295,27 @@ size_t hash_func(size_t key, type val) {
 }
 //hash tables class
 template<typename type>
-class HashTable : public TableByArray<std::forward_list<type>> {
+class HashTable : public TableByArray<type>  {
 protected:
-	using pair = std::pair < size_t, std::forward_list<type>>;
-	using vector = std::vector<std::pair<size_t, std::forward_list<type>>>;
+	using pair = std::pair < size_t, type >;
 	size_t (*my_hash)(size_t, type);
 	size_t sz;
-
-	bool insert(size_t key, std::forward_list<type> val) override {		return true;	}
-
+    std::vector<std::list<std::pair<size_t,type> > > vec_of_list;
+	
 	size_t get_hash(size_t key, type val) {
 		return (((*my_hash)(key, val)) % (sz));
 	}
 public:
 	typedef size_t (*func)(size_t, type);
 	HashTable(size_t _sz, func f = &hash_func<type>) : sz(_sz), my_hash(f) {
-		TableByArray<std::forward_list<type>>::mem.resize(sz);
+		TableByArray<type>::mem.resize(0);
+        vec_of_list.resize(sz);
+        //TableByArray<std::list<type> >::mem[0].push_back(0);
 	}
 
-	bool insert(size_t key, type val) {
+	bool insert(size_t key, type val) override {
 		size_t num = get_hash(key,val);
-		
+        
 		return true;
 	}
 

@@ -1,4 +1,4 @@
-﻿//UNN
+//UNN
 //Litvyakov D. D.
 //
 
@@ -31,6 +31,7 @@ int main()
 	cout << A<<endl;
 	cout << (B);
 
+    
 	HashTable<int> C(16);
 	C.insert(1, 1);
 	return 0;
