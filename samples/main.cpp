@@ -1,38 +1,28 @@
 //UNN
 //Litvyakov D. D.
 //
-
+#define _USE_MATH_DEFINES
 #include "table.h"
 #include <iostream>
+#include <cmath>
 
+
+size_t BradysHash(size_t key, double val) {
+	return key;
+}
 
 using namespace std;
 int main()
 {
-	//таблица брадиса хэш таблица
-	UnsortedTable<int> A;
-	A.insert(1, 5);
-	A.insert(2, 10);
-	UnsortedTable<int>::iterator it = A.find(1);
-	
-	(it++).value() = 6;
-	(it--).value() = 12;
+	HashTable<double> BradysTableSin(90, &BradysHash);
+	for (size_t i = 0; i < 91; ++i) {
+		BradysTableSin.insert(i, sin(double(i) * M_PI / 180));
+	}
+	cout << "Bradys Table for sin: \n";
+	for (size_t i = 0; i < 91; ++i) {
+		cout << (BradysTableSin.find(i))->first<<"\370 = "<< (BradysTableSin.find(i))->second << endl;
+	}
 
-	
-	SortedTable<int> B;
-	B.insert(1,1);
-	B.insert(4, 4);
-	B.insert(5,5);
-	B.insert(2, 2);
-	B.insert(3, 3);
-	B.erase(1);
-
-	SortedTable<int>::iterator it2 = B.begin();
-	cout << A<<endl;
-	cout << (B);
-
-    
-	HashTable<int> C(16);
-	C.insert(1, 1);
 	return 0;
 }
+

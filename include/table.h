@@ -295,12 +295,12 @@ size_t hash_func(size_t key, type val) {
 }
 //hash tables class
 template<typename type>
-class HashTable : public TableByArray<type>  {
+class HashTable : public TableInterface<type>  {
 protected:
 	using pair = std::pair < size_t, type >;
 	size_t (*my_hash)(size_t, type);
 	size_t sz;
-    std::vector<std::list<std::pair<size_t,type> > > vec_of_list;
+    std::vector<std::list<pair> > vec;
 	
 	size_t get_hash(size_t key, type val) {
 		return (((*my_hash)(key, val)) % (sz));
@@ -308,24 +308,83 @@ protected:
 public:
 	typedef size_t (*func)(size_t, type);
 	HashTable(size_t _sz, func f = &hash_func<type>) : sz(_sz), my_hash(f) {
-		TableByArray<type>::mem.resize(0);
-        vec_of_list.resize(sz);
-        //TableByArray<std::list<type> >::mem[0].push_back(0);
+        vec.resize(sz);
+	}
+
+	bool empty() override { 
+		bool flag = true;
+		for (size_t i = 0; i < sz; ++i) {
+			if (!vec[i].empty()) flag = false;
+		}
+		return flag;
+	}
+	size_t size() override { 
+		size_t sum = 0;
+		for (size_t i = 0; i < sz; ++i) {
+			sum += vec[i].size();
+		}
+		return sum;
+	}
+	void clear() override { 
+		for (size_t i = 0; i < sz; ++i) {
+			vec[i].clear();
+			vec[i].resize(sz);
+		}
 	}
 
 	bool insert(size_t key, type val) override {
 		size_t num = get_hash(key,val);
-        
+		auto it = vec[num].begin();
+		for (size_t i = 0; i < vec[num].size(); ++i) {
+			if ((*it).first == key) return false;
+			++it;
+		}
+		vec[num].push_front(pair(key, val));
 		return true;
 	}
 
 	bool erase(size_t key) override {
-
+		size_t num = get_hash(key, type());
+		auto it = vec[num].begin();
+		bool flag = false;
+		for (size_t i = 0; i < vec[num].size(); ++i) {
+			if ((*(it)).first == key) {
+				flag = true;
+				break;
+			}
+			it++;
+		}
+		if (flag == false) return flag;
+		vec[num].erase(it);
 		return true;
 	}
 
-	size_t find(size_t key) {
+	std::pair<size_t, type>* find(size_t key) {
+		size_t num = get_hash(key, type());
+		auto it = vec[num].begin();
+		bool flag = false;
+		for (size_t i = 0; i < vec[num].size(); ++i) {
+			if ((*(it)).first == key) {
+				flag = true;
+				break;
+			}
+			it++;
+		}
+		if (flag == false) return nullptr;
+		return &(*it);
+	}
 
-		return key;
+	friend std::ostream& operator<<(std::ostream& os, HashTable<type>& table) {
+		for (size_t i = 0; i < table.vec.size(); ++i) {
+			os << "Num" << i << ":\t";
+			{
+				if(table.vec[i].size()!=0)
+				for (auto it = table.vec[i].begin(); it != table.vec[i].end(); ++it) {
+					os << (*it).first << ":" << (*it).second << " -> ";
+				}
+				os << std::endl;
+			}
+		}
+		return os;
 	}
 };
