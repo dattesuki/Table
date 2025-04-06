@@ -109,6 +109,9 @@ public:
 			}
 			return *this;
 		}
+		bool operator!=(const iterator& right) {
+			return (this->it) != right.it;
+		}
 	};
 
 	iterator begin(){
@@ -123,7 +126,10 @@ public:
 
 	iterator find(size_t key) { 
 		iterator it = TableByArray<type>::mem.begin();
-		while (it.key() != key) ++it;
+		while (it != mem.end()) {
+			if (it.key() == key) return it;
+			++it;
+		}
 		if (it.key() != key) it = end();
 		return it; 
 	}
@@ -301,10 +307,8 @@ public:
 
 	bool insert(size_t key, type val) override {
 		size_t num = get_hash(key,val);
-		auto it = vec[num].begin();
-		for (size_t i = 0; i < vec[num].size(); ++i) {
+		for (auto it = vec[num].begin(); it != vec[num].end(); ++it) {
 			if ((*it).first == key) return false;
-			++it;
 		}
 		vec[num].push_front(pair(key, val));
 		return true;

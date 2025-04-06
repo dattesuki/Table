@@ -5,7 +5,7 @@
 #include "table.h"
 #include <iostream>
 #include <cmath>
-
+#include <iomanip>
 
 size_t BradysHash(size_t key, double val) {
 	return key;
@@ -20,7 +20,7 @@ int main()
 	}
 	cout << "Bradys Table for sin: \n";
 	for (size_t i = 0; i < 361; ++i) {
-		cout << (BradysTableSin.find(i))->first<<"\370 = "<< (BradysTableSin.find(i))->second << endl;
+		cout << setprecision(2) <<(BradysTableSin.find(i))->first<<"\370 = "<< (BradysTableSin.find(i))->second << "\n";
 	}
 
 	return 0;
