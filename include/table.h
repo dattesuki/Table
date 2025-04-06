@@ -126,7 +126,7 @@ public:
 
 	iterator find(size_t key) { 
 		iterator it = TableByArray<type>::mem.begin();
-		while (it != mem.end()) {
+		while (it != TableByArray<type>::mem.end()) {
 			if (it.key() == key) return it;
 			++it;
 		}
