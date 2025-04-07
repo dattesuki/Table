@@ -2,7 +2,6 @@
 //Litvyakov D. D.
 //
 
-#pragma once
 
+#include "table.h"
 
-int check();
